@@ -4,16 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'scroll_notification_publisher.dart';
 
+enum ScrollState {
+  outOfViewPortStart,
+  inViewPort,
+  outOfViewPortEnd,
+}
+
+typedef OnHide = Function(Duration duration);
+
 // 控制曝光
 class Exposure extends StatefulWidget {
   const Exposure({
     Key? key,
     required this.onExpose,
     required this.child,
+    this.onHide,
+    this.exposeFactor = 0.5,
   }) : super(key: key);
 
   final VoidCallback onExpose;
+  final OnHide? onHide;
   final Widget child;
+  final double exposeFactor;
 
   @override
   State<Exposure> createState() => _ExposureState();
@@ -22,11 +34,12 @@ class Exposure extends StatefulWidget {
 class _ExposureState extends State<Exposure> {
   bool show = false;
   ScrollState? state;
+  DateTime? _exposeDate;
 
   @override
   void initState() {
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      subScribeScrollNotification(context);
+      subscribeScrollNotification(context);
     });
     super.initState();
   }
@@ -36,7 +49,7 @@ class _ExposureState extends State<Exposure> {
     return widget.child;
   }
 
-  void subScribeScrollNotification(BuildContext context) {
+  void subscribeScrollNotification(BuildContext context) {
     final StreamController<ScrollNotification> publisher =
         ScrollNotificationPublisher.of(context);
     publisher.stream.listen((scrollNotification) {
@@ -102,12 +115,14 @@ class _ExposureState extends State<Exposure> {
     if (!show && state == ScrollState.inViewPort) {
       show = true;
       widget.onExpose.call();
+      _recordExposeTime();
       return;
     }
 
-    bool scrollInEnd =
-        (exposureOffset + currentSize) < (scrollOffset + viewPortSize);
-    bool scrollInStart = scrollOffset < exposureOffset;
+    bool scrollInEnd = (exposureOffset + currentSize * widget.exposeFactor) <
+        (scrollOffset + viewPortSize);
+    bool scrollInStart = scrollOffset <
+        (exposureOffset + (currentSize * (1 - widget.exposeFactor)));
 
     bool scrollOutEnd = (exposureOffset - scrollOffset) > viewPortSize;
     bool scrollOutStart = (scrollOffset - exposureOffset) > currentSize;
@@ -117,6 +132,7 @@ class _ExposureState extends State<Exposure> {
         state = ScrollState.inViewPort;
         widget.onExpose.call();
         show = true;
+        _recordExposeTime();
         return;
       }
     }
@@ -125,6 +141,7 @@ class _ExposureState extends State<Exposure> {
         state = ScrollState.inViewPort;
         widget.onExpose.call();
         show = true;
+        _recordExposeTime();
         return;
       }
     }
@@ -138,12 +155,15 @@ class _ExposureState extends State<Exposure> {
         state = ScrollState.outOfViewPortEnd;
         return;
       }
+      _onHide();
     }
   }
-}
 
-enum ScrollState {
-  outOfViewPortStart,
-  inViewPort,
-  outOfViewPortEnd,
+  _recordExposeTime() {
+    _exposeDate = DateTime.now();
+  }
+
+  _onHide() {
+    widget.onHide?.call(DateTime.now().difference(_exposeDate!));
+  }
 }
