@@ -4,15 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'scroll_notification_publisher.dart';
 
+// 控制曝光
 class Exposure extends StatefulWidget {
   const Exposure({
     Key? key,
-    required this.scrollDirection,
     required this.onExpose,
     required this.child,
   }) : super(key: key);
 
-  final Axis scrollDirection;
   final VoidCallback onExpose;
   final Widget child;
 
@@ -41,18 +40,19 @@ class _ExposureState extends State<Exposure> {
     final StreamController<ScrollNotification> publisher =
         ScrollNotificationPublisher.of(context);
     publisher.stream.listen((scrollNotification) {
-      trackWidgetPosition(scrollNotification.metrics.pixels);
+      trackWidgetPosition(
+          scrollNotification.metrics.pixels, scrollNotification.metrics.axis);
     });
   }
 
-  void trackWidgetPosition(double scrollOffset) {
+  void trackWidgetPosition(double scrollOffset, Axis direction) {
     if (!mounted) {
       return;
     }
     final exposureOffset = getExposureOffset(context);
     final exposurePitSize = (context.findRenderObject() as RenderBox).size;
     final viewPortSize = getViewPortSize(context) ?? const Size(1, 1);
-    if (widget.scrollDirection == Axis.vertical) {
+    if (direction == Axis.vertical) {
       checkExposure(exposureOffset, scrollOffset, exposurePitSize.height,
           viewPortSize.height);
     } else {

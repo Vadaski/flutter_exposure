@@ -12,17 +12,6 @@ class ScrollDetailProvider extends StatefulWidget {
 
 class _ScrollDetailProviderState extends State<ScrollDetailProvider>
     with AutomaticKeepAliveClientMixin {
-  // void initState() {
-
-  //   super.initState();
-  // }
-
-  @override
-  void dispose() {
-    ScrollNotificationPublisher.of(context).close();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -40,6 +29,8 @@ class _ScrollDetailProviderState extends State<ScrollDetailProvider>
     );
   }
 
+  // 首次展现需要单独发一个 Notification
+  // pixels 为 0
   void postStartPosition(BuildContext context) async {
     await Future.delayed(Duration(microseconds: 500));
     ScrollNotificationPublisher.of(context).add(

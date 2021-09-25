@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+// 共享滑动信息
 class ScrollNotificationPublisher extends InheritedWidget {
   ScrollNotificationPublisher({Key? key, required Widget child})
       : super(key: key, child: child);
@@ -15,8 +16,8 @@ class ScrollNotificationPublisher extends InheritedWidget {
   }
 
   static StreamController<ScrollNotification> of(BuildContext context) {
-    return (context.findAncestorWidgetOfExactType<ScrollNotificationPublisher>()
-            as ScrollNotificationPublisher)
+    return (context.dependOnInheritedWidgetOfExactType<
+            ScrollNotificationPublisher>() as ScrollNotificationPublisher)
         .scrollNotificationController;
   }
 }
