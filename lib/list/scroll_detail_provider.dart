@@ -31,8 +31,9 @@ class _ScrollDetailProviderState extends State<ScrollDetailProvider>
 
   // 首次展现需要单独发一个 Notification
   // pixels 为 0
+  // 为了避免 listener 还没有监听上从而丢失第一次消息，延迟 500 ms
   void postStartPosition(BuildContext context) async {
-    await Future.delayed(Duration(microseconds: 500));
+    await Future.delayed(const Duration(microseconds: 500));
     ScrollNotificationPublisher.of(context).add(
       ScrollStartNotification(
         context: context,

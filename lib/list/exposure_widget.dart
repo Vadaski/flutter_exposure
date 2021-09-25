@@ -91,9 +91,7 @@ class _ExposureState extends State<Exposure> {
     if (scrollOutStart) {
       state = ScrollState.outOfViewPortStart;
     }
-    if (state == null) {
-      state = ScrollState.inViewPort;
-    }
+    state ??= ScrollState.inViewPort;
   }
 
   void checkExposure(double exposureOffset, double scrollOffset,
