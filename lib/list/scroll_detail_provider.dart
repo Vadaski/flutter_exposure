@@ -1,4 +1,4 @@
-import 'package:exposure/list/scroll_notification_publisher.dart';
+import 'package:flutter_exposure/list/scroll_notification_publisher.dart';
 import 'package:flutter/material.dart';
 
 class ScrollDetailProvider extends StatefulWidget {

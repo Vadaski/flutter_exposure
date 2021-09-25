@@ -9,7 +9,7 @@ Add this to your package's pubspec.yaml file:
 
 ``` yaml
 dependencies:
-  exposure: ^0.0.1
+  flutter_exposure: ^0.0.1
 ``` 
 
 2. Install it 
