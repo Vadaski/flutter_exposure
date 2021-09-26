@@ -10,7 +10,7 @@ Add this to your package's pubspec.yaml file:
 ``` yaml
 dependencies:
   flutter_exposure: ^0.0.1
-``` 
+```
 
 2. Install it 
 You can install packages from the command line:
@@ -62,5 +62,21 @@ You can also control the proportion of widgets you want to expose through `expos
     )
 ```
 
+
+
+## Example
+
+Here is some example of usage.
+
+<video src="/Users/didi/personal/open_source/exposure/asset/gridview_with_lazy.mp4"></video>
+
+
+
+<video src="/Users/didi/personal/open_source/exposure/asset/listview_with_lazy.mp4"></video>
+
+<video src="/Users/didi/personal/open_source/exposure/asset/listview_without_lazy.mp4"></video>
+
 ## Bugs or Requests 
+
 If you encounter any problems feel free to open an [issue](https://github.com/Vadaski/flutter_exposure/issues). If you feel the library is missing a feature, please raise a ticket on GitHub and I'll look into it. Pull request are also welcome.
+
