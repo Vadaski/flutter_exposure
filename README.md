@@ -1,6 +1,6 @@
 ## Features
 A Flutter point-of-the-spot solution that currently supports scrollable Widget exposure
-- Scrollable Exposure
+- Scrollable Exposure: It can be used at all ScrollView Widgets like: ListView , GridView, CustomScrollView and so on.
 
 ## Getting started
 
@@ -68,13 +68,27 @@ You can also control the proportion of widgets you want to expose through `expos
 
 Here is some example of usage.
 
-<video src="/Users/didi/personal/open_source/exposure/asset/gridview_with_lazy.mp4"></video>
+#### Track It Every Time
+
+A `ListView` has items of different heights, tracking the time when each item enters the user's field of vision.
+
+![hight_change_listview_without_lazy_track](./asset/hight_change_listview_without_lazy_track.gif)
+
+#### Lazy Track
+
+A `ListView` has items of different heights, and only when the scrolling is over, the items in the field of view are tracked.
+
+![hight_change_listview_with_lazy_track](./asset/hight_change_listview_with_lazy_track.gif)
 
 
 
-<video src="/Users/didi/personal/open_source/exposure/asset/listview_with_lazy.mp4"></video>
+#### CustomScrollView
 
-<video src="/Users/didi/personal/open_source/exposure/asset/listview_without_lazy.mp4"></video>
+It also support track in `CustomScrollView` with different slivers.
+
+
+
+![custom_scrollview_with_lazy_track](./asset/custom_scrollview_with_lazy_track.gif)
 
 ## Bugs or Requests 
 
