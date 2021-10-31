@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+
 import 'scroll_notification_publisher.dart';
 
 enum ScrollState {
@@ -15,15 +16,15 @@ typedef OnHide = Function(Duration duration);
 // 控制曝光
 class Exposure extends StatefulWidget {
   const Exposure({
-    Key? key,
-    required this.onExpose,
-    required this.child,
+    Key key,
+    this.onExpose,
+    this.child,
     this.onHide,
     this.exposeFactor = 0.5,
   }) : super(key: key);
 
   final VoidCallback onExpose;
-  final OnHide? onHide;
+  final OnHide onHide;
   final Widget child;
   final double exposeFactor;
 
@@ -33,8 +34,8 @@ class Exposure extends StatefulWidget {
 
 class _ExposureState extends State<Exposure> {
   bool show = false;
-  ScrollState? state;
-  DateTime? _exposeDate;
+  ScrollState state;
+  DateTime _exposeDate;
 
   @override
   void initState() {
@@ -50,11 +51,9 @@ class _ExposureState extends State<Exposure> {
   }
 
   void subscribeScrollNotification(BuildContext context) {
-    final StreamController<ScrollNotification> publisher =
-        ScrollNotificationPublisher.of(context);
+    final StreamController<ScrollNotification> publisher = ScrollNotificationPublisher.of(context);
     publisher.stream.listen((scrollNotification) {
-      trackWidgetPosition(
-          scrollNotification.metrics.pixels, scrollNotification.metrics.axis);
+      trackWidgetPosition(scrollNotification.metrics.pixels, scrollNotification.metrics.axis);
     });
   }
 
@@ -66,36 +65,32 @@ class _ExposureState extends State<Exposure> {
     final exposurePitSize = (context.findRenderObject() as RenderBox).size;
     final viewPortSize = getViewPortSize(context) ?? const Size(1, 1);
     if (direction == Axis.vertical) {
-      checkExposure(exposureOffset, scrollOffset, exposurePitSize.height,
-          viewPortSize.height);
+      checkExposure(exposureOffset, scrollOffset, exposurePitSize.height, viewPortSize.height);
     } else {
-      checkExposure(exposureOffset, scrollOffset, exposurePitSize.width,
-          viewPortSize.width);
+      checkExposure(exposureOffset, scrollOffset, exposurePitSize.width, viewPortSize.width);
     }
   }
 
-  Size? getViewPortSize(BuildContext context) {
-    final RenderObject? box = context.findRenderObject();
-    final RenderAbstractViewport? viewport = RenderAbstractViewport.of(box);
-    final Size? size = viewport?.paintBounds.size;
+  Size getViewPortSize(BuildContext context) {
+    final RenderObject box = context.findRenderObject();
+    final RenderAbstractViewport viewport = RenderAbstractViewport.of(box);
+    final Size size = viewport?.paintBounds.size;
     return size;
   }
 
   double getExposureOffset(BuildContext context) {
-    final RenderObject? box = context.findRenderObject();
-    final RenderAbstractViewport? viewport = RenderAbstractViewport.of(box);
+    final RenderObject box = context.findRenderObject();
+    final RenderAbstractViewport viewport = RenderAbstractViewport.of(box);
 
     if (viewport == null || box == null || !box.attached) {
       return 0.0;
     }
 
-    final RevealedOffset offsetRevealToTop =
-        viewport.getOffsetToReveal(box, 0.0, rect: Rect.zero);
+    final RevealedOffset offsetRevealToTop = viewport.getOffsetToReveal(box, 0.0, rect: Rect.zero);
     return offsetRevealToTop.offset;
   }
 
-  void initScrollState(double exposureOffset, double scrollOffset,
-      double currentSize, double viewPortSize) {
+  void initScrollState(double exposureOffset, double scrollOffset, double currentSize, double viewPortSize) {
     bool scrollOutEnd = (exposureOffset - scrollOffset) > viewPortSize;
     bool scrollOutStart = (scrollOffset - exposureOffset) > currentSize;
     if (scrollOutEnd) {
@@ -107,8 +102,7 @@ class _ExposureState extends State<Exposure> {
     state ??= ScrollState.inViewPort;
   }
 
-  void checkExposure(double exposureOffset, double scrollOffset,
-      double currentSize, double viewPortSize) {
+  void checkExposure(double exposureOffset, double scrollOffset, double currentSize, double viewPortSize) {
     if (state == null) {
       initScrollState(exposureOffset, scrollOffset, currentSize, viewPortSize);
     }
@@ -119,10 +113,8 @@ class _ExposureState extends State<Exposure> {
       return;
     }
 
-    bool scrollInEnd = (exposureOffset + currentSize * widget.exposeFactor) <
-        (scrollOffset + viewPortSize);
-    bool scrollInStart = scrollOffset <
-        (exposureOffset + (currentSize * (1 - widget.exposeFactor)));
+    bool scrollInEnd = (exposureOffset + currentSize * widget.exposeFactor) < (scrollOffset + viewPortSize);
+    bool scrollInStart = scrollOffset < (exposureOffset + (currentSize * (1 - widget.exposeFactor)));
 
     bool scrollOutEnd = (exposureOffset - scrollOffset) > viewPortSize;
     bool scrollOutStart = (scrollOffset - exposureOffset) > currentSize;
@@ -164,6 +156,6 @@ class _ExposureState extends State<Exposure> {
   }
 
   _onHide() {
-    widget.onHide?.call(DateTime.now().difference(_exposeDate!));
+    widget.onHide?.call(DateTime.now().difference(_exposeDate));
   }
 }

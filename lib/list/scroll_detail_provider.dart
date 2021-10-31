@@ -1,10 +1,10 @@
-import 'package:flutter_exposure/list/scroll_notification_publisher.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_exposure/list/scroll_notification_publisher.dart';
 
 class ScrollDetailProvider extends StatefulWidget {
   const ScrollDetailProvider({
-    Key? key,
-    required this.child,
+    Key key,
+    this.child,
     this.lazy = false,
   }) : super(key: key);
 
@@ -15,8 +15,7 @@ class ScrollDetailProvider extends StatefulWidget {
   _ScrollDetailProviderState createState() => _ScrollDetailProviderState();
 }
 
-class _ScrollDetailProviderState extends State<ScrollDetailProvider>
-    with AutomaticKeepAliveClientMixin {
+class _ScrollDetailProviderState extends State<ScrollDetailProvider> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
