@@ -30,6 +30,8 @@ dependencies:
   cupertino_icons: ^0.1.3
   flutter_exposure:
     path: ../../flutter_exposure
+  dio: ^3.0.10
+  dio_flutter_transformer: ^3.0.2
 
 dev_dependencies:
   flutter_test:
