@@ -17,7 +17,9 @@ typedef OnHide = Function(Duration duration);
 class Exposure extends StatefulWidget {
   const Exposure({
     Key key,
+    @required
     this.onExpose,
+    @required
     this.child,
     this.onHide,
     this.exposeFactor = 0.5,
