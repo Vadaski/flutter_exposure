@@ -1,27 +1,23 @@
-import 'package:flutter/material.dart';
-
+//@dart=2.9
+// 对比老版本的
 int sum(int a, int b) {
   return a + b;
 }
 
 void main() {
-  int a;
-  int b = 1;
-  // sum(a, b);
+  sum(null, 1);
 }
 
-// 成员变量不能为不赋值
-class A {
-  int x;
-  A({this.x});
-}
+// 类型系统 => ppt
 
-// 方法内空检查
+// 类型提升 Type promotion
 
-// 方法 访问了一个外部的值
+// ！运算符
+
+// 成员变量的变化
+
+// 为什么成员变量无法进行类型提升
+
+// 静态变量以及顶级变量
 
 // late Key word
-
-// !operator
-
-//
