@@ -1,4 +1,3 @@
-// @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_exposure/exposure.dart';
@@ -57,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
           )),
         ],
       ),
+      floatingActionButton: FlatButton(onPressed: (){}, child: Icon(Icons.list)),
     );
   }
 }
