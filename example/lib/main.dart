@@ -32,41 +32,120 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: const TabBar(tabs: [
+          Tab(text: 'StaggeredGridViewDemo'),
+          Tab(text: 'CustomScrollViewDemo'),
+        ]),
+        body: TabBarView(
+          children: [
+            StaggeredGridViewDemo(),
+            const CustomScrollViewDemo(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class StaggeredGridViewDemo extends StatelessWidget {
+  StaggeredGridViewDemo({Key? key}) : super(key: key);
   final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ScrollDetailProvider(
-        child: StaggeredGridView.countBuilder(
-            shrinkWrap: true,
-            controller: _scrollController,
-            crossAxisCount: 4,
-            crossAxisSpacing: 4,
-            mainAxisSpacing: 10,
-            itemCount: 30,
-            itemBuilder: (context, index) {
-              return Exposure(
-                onExpose: (){
-                  print(index);
+    return ScrollDetailProvider(
+      lazy: false,
+      child: StaggeredGridView.countBuilder(
+          shrinkWrap: true,
+          controller: _scrollController,
+          crossAxisCount: 4,
+          crossAxisSpacing: 4,
+          mainAxisSpacing: 10,
+          itemCount: 30,
+          itemBuilder: (context, index) {
+            return Exposure(
+              exposeFactor: 0,
+              onExpose: () {
+                debugPrint('$index');
+              },
+              child: Container(
+                  color: Colors.green,
+                  child: Center(
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: Text('$index'),
+                    ),
+                  )),
+            );
+          },
+          staggeredTileBuilder: (index) =>
+              StaggeredTile.count(2, index == 0 ? 2.5 : 3)),
+    );
+  }
+}
+
+class CustomScrollViewDemo extends StatelessWidget {
+  const CustomScrollViewDemo({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: ScrollDetailProvider(
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverPadding(
+              padding: const EdgeInsets.all(8.0),
+              sliver: SliverGrid(
+                //Grid
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, //Grid按两列显示
+                  mainAxisSpacing: 10.0,
+                  crossAxisSpacing: 10.0,
+                  childAspectRatio: 4.0,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    //创建子widget
+                    return Exposure(
+                        onExpose: () {
+                          debugPrint('SliverGrid$index');
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          color: Colors.cyan[100 * (index % 9)],
+                          child: Text('grid item $index'),
+                        ));
+                  },
+                  childCount: 20,
+                ),
+              ),
+            ),
+            SliverFixedExtentList(
+              itemExtent: 50.0,
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  //创建列表项
+                  return Exposure(
+                    onExpose: (){
+                      debugPrint('SliverFixedExtentList:$index');
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      color: Colors.lightBlue[100 * (index % 9)],
+                      child: Text('list item $index'),
+                    ),
+                  );
                 },
-                child: Container(
-                    color: Colors.green,
-                    child: Center(
-                      child: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        child: Text('$index'),
-                      ),
-                    )),
-              );
-            },
-            staggeredTileBuilder: (index) =>
-                StaggeredTile.count(2, index == 0 ? 2.5 : 3)),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          print('123');
-        },
+                childCount: 20,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
