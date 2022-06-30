@@ -39,7 +39,9 @@ class _ExposureState extends State<Exposure> {
   @override
   void initState() {
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      subscribeScrollNotification(context);
+      if(mounted){
+        subscribeScrollNotification(context);
+      }  
     });
     super.initState();
   }
