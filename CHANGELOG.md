@@ -4,3 +4,6 @@
 
 ## 0.0.2
 * fix a null safety issue
+
+## 0.0.3
+* fix a null safety issue to adapt flutter 3.0.5
