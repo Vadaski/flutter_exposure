@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+
 import 'scroll_notification_publisher.dart';
 
 enum ScrollState {
@@ -39,9 +40,9 @@ class _ExposureState extends State<Exposure> {
   @override
   void initState() {
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      if(mounted){
+      if (mounted) {
         subscribeScrollNotification(context);
-      }  
+      }
     });
     super.initState();
   }
@@ -98,8 +99,11 @@ class _ExposureState extends State<Exposure> {
 
   void initScrollState(double exposureOffset, double scrollOffset,
       double currentSize, double viewPortSize) {
-    bool scrollOutEnd = (exposureOffset - scrollOffset) > viewPortSize;
-    bool scrollOutStart = (scrollOffset - exposureOffset) > currentSize;
+    bool scrollOutEnd =
+        (exposureOffset - scrollOffset + (currentSize * widget.exposeFactor)) >
+            viewPortSize;
+    bool scrollOutStart =
+        (scrollOffset - exposureOffset) > currentSize * widget.exposeFactor;
     if (scrollOutEnd) {
       state = ScrollState.outOfViewPortEnd;
     }
