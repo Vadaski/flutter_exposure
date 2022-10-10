@@ -1,15 +1,12 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import 'scroll_notification_publisher.dart';
 
-enum ScrollState {
-  outOfViewPortStart,
-  inViewPort,
-  outOfViewPortEnd,
-}
+enum ScrollState { visible, invisible }
 
 typedef OnHide = Function(Duration duration);
 
@@ -21,12 +18,14 @@ class Exposure extends StatefulWidget {
     required this.child,
     this.onHide,
     this.exposeFactor = 0.5,
+    this.exposureController,
   }) : super(key: key);
 
   final VoidCallback onExpose;
   final OnHide? onHide;
   final Widget child;
   final double exposeFactor;
+  final ExposureController? exposureController;
 
   @override
   State<Exposure> createState() => _ExposureState();
@@ -34,8 +33,11 @@ class Exposure extends StatefulWidget {
 
 class _ExposureState extends State<Exposure> {
   bool show = false;
-  ScrollState? state;
+  ScrollState state = ScrollState.invisible;
   DateTime? _exposeDate;
+  double _scrollOffset = 0.0;
+  Axis direction = Axis.vertical;
+  late StreamSubscription _scrollNotificationSubscription;
 
   @override
   void initState() {
@@ -44,7 +46,15 @@ class _ExposureState extends State<Exposure> {
         subscribeScrollNotification(context);
       }
     });
+    widget.exposureController?._addState(this);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget.exposureController?._removeState(this);
+    _scrollNotificationSubscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -55,13 +65,15 @@ class _ExposureState extends State<Exposure> {
   void subscribeScrollNotification(BuildContext context) {
     final StreamController<ScrollNotification> publisher =
         ScrollNotificationPublisher.of(context);
-    publisher.stream.listen((scrollNotification) {
-      trackWidgetPosition(
-          scrollNotification.metrics.pixels, scrollNotification.metrics.axis);
+    _scrollNotificationSubscription =
+        publisher.stream.listen((scrollNotification) {
+      _scrollOffset = scrollNotification.metrics.pixels;
+      direction = scrollNotification.metrics.axis;
+      trackWidgetPosition();
     });
   }
 
-  void trackWidgetPosition(double scrollOffset, Axis direction) {
+  void trackWidgetPosition() {
     if (!mounted) {
       return;
     }
@@ -69,10 +81,10 @@ class _ExposureState extends State<Exposure> {
     final exposurePitSize = (context.findRenderObject() as RenderBox).size;
     final viewPortSize = getViewPortSize(context) ?? const Size(1, 1);
     if (direction == Axis.vertical) {
-      checkExposure(exposureOffset, scrollOffset, exposurePitSize.height,
+      checkExposure(exposureOffset, _scrollOffset, exposurePitSize.height,
           viewPortSize.height);
     } else {
-      checkExposure(exposureOffset, scrollOffset, exposurePitSize.width,
+      checkExposure(exposureOffset, _scrollOffset, exposurePitSize.width,
           viewPortSize.width);
     }
   }
@@ -97,71 +109,32 @@ class _ExposureState extends State<Exposure> {
     return offsetRevealToTop.offset;
   }
 
-  void initScrollState(double exposureOffset, double scrollOffset,
-      double currentSize, double viewPortSize) {
-    bool scrollOutEnd =
-        (exposureOffset - scrollOffset + (currentSize * widget.exposeFactor)) >
-            viewPortSize;
-    bool scrollOutStart =
-        (scrollOffset - exposureOffset) > currentSize * widget.exposeFactor;
-    if (scrollOutEnd) {
-      state = ScrollState.outOfViewPortEnd;
-    }
-    if (scrollOutStart) {
-      state = ScrollState.outOfViewPortStart;
-    }
-    state ??= ScrollState.inViewPort;
-  }
-
   void checkExposure(double exposureOffset, double scrollOffset,
       double currentSize, double viewPortSize) {
-    if (state == null) {
-      initScrollState(exposureOffset, scrollOffset, currentSize, viewPortSize);
-    }
-    if (!show && state == ScrollState.inViewPort) {
-      show = true;
-      widget.onExpose.call();
-      _recordExposeTime();
-      return;
-    }
+    final exposeFactor = min(max(widget.exposeFactor, 0.1), 0.9);
+    bool becomeVisible =
+        (exposureOffset + currentSize * (1 - exposeFactor)) > scrollOffset &&
+            (exposureOffset + currentSize * exposeFactor) <
+                (scrollOffset + viewPortSize);
 
-    bool scrollInEnd = (exposureOffset + currentSize * widget.exposeFactor) <
-        (scrollOffset + viewPortSize);
-    bool scrollInStart = scrollOffset <
-        (exposureOffset + (currentSize * (1 - widget.exposeFactor)));
+    bool becomeInvisible =
+        (exposureOffset + currentSize * exposeFactor) < scrollOffset ||
+            (exposureOffset + (currentSize * (exposeFactor))) >
+                scrollOffset + viewPortSize;
 
-    bool scrollOutEnd = (exposureOffset - scrollOffset) > viewPortSize;
-    bool scrollOutStart = (scrollOffset - exposureOffset) > currentSize;
-
-    if (state == ScrollState.outOfViewPortEnd) {
-      if (scrollInEnd) {
-        state = ScrollState.inViewPort;
+    if (state == ScrollState.invisible) {
+      if (becomeVisible) {
+        state = ScrollState.visible;
         widget.onExpose.call();
-        show = true;
         _recordExposeTime();
         return;
       }
-    }
-    if (state == ScrollState.outOfViewPortStart) {
-      if (scrollInStart) {
-        state = ScrollState.inViewPort;
-        widget.onExpose.call();
-        show = true;
-        _recordExposeTime();
+    } else {
+      if (becomeInvisible) {
+        state = ScrollState.invisible;
+        _onHide();
         return;
       }
-    }
-    if (state == ScrollState.inViewPort) {
-      if (scrollOutStart) {
-        state = ScrollState.outOfViewPortStart;
-        return;
-      }
-
-      if (scrollOutEnd) {
-        state = ScrollState.outOfViewPortEnd;
-        return;
-      }
-      _onHide();
     }
   }
 
@@ -171,5 +144,31 @@ class _ExposureState extends State<Exposure> {
 
   _onHide() {
     widget.onHide?.call(DateTime.now().difference(_exposeDate!));
+  }
+
+  void reCheckExposeState() {
+    state = ScrollState.invisible;
+    show = false;
+    _scrollNotificationSubscription.cancel();
+    subscribeScrollNotification(context);
+    trackWidgetPosition();
+  }
+}
+
+class ExposureController {
+  final List<_ExposureState> _states = [];
+
+  void _addState(_ExposureState state) {
+    _states.add(state);
+  }
+
+  void _removeState(_ExposureState state) {
+    _states.remove(state);
+  }
+
+  void reCheckExposeState() {
+    for (var _state in _states) {
+      _state.reCheckExposeState();
+    }
   }
 }

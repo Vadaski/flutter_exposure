@@ -1,5 +1,5 @@
 library exposure;
 
-export './list/exposure_widget.dart';
-export './list/scroll_detail_provider.dart';
-export './list/scroll_notification_publisher.dart';
+export './src/exposure_widget.dart';
+export './src/scroll_detail_provider.dart';
+export './src/scroll_notification_publisher.dart';

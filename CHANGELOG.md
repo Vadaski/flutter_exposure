@@ -8,3 +8,4 @@
 ## 0.0.3
 * fix a null safety issue to adapt flutter 3.0.5
 * fix exposure factor doesn't work in first frame
+* support expose check manually

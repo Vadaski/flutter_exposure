@@ -1,5 +1,5 @@
-import 'package:flutter_exposure/list/scroll_notification_publisher.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_exposure/src/scroll_notification_publisher.dart';
 
 class ScrollDetailProvider extends StatefulWidget {
   const ScrollDetailProvider({
@@ -17,12 +17,17 @@ class ScrollDetailProvider extends StatefulWidget {
 
 class _ScrollDetailProviderState extends State<ScrollDetailProvider>
     with AutomaticKeepAliveClientMixin {
+  bool initialed = false;
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return ScrollNotificationPublisher(
       child: Builder(builder: (context) {
-        postStartPosition(context);
+        if (!initialed) {
+          postStartPosition(context);
+          initialed = true;
+        }
         return buildNotificationWidget(context, widget.child);
       }),
     );

@@ -32,6 +32,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final ExposureController _controller = ExposureController();
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -43,9 +44,14 @@ class _MyHomePageState extends State<MyHomePage> {
         ]),
         body: TabBarView(
           children: [
-            StaggeredGridViewDemo(),
+            StaggeredGridViewDemo(controller: _controller),
             const CustomScrollViewDemo(),
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _controller.reCheckExposeState();
+          },
         ),
       ),
     );
@@ -53,8 +59,9 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class StaggeredGridViewDemo extends StatelessWidget {
-  StaggeredGridViewDemo({Key? key}) : super(key: key);
+  StaggeredGridViewDemo({Key? key, required this.controller}) : super(key: key);
   final ScrollController _scrollController = ScrollController();
+  ExposureController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +76,8 @@ class StaggeredGridViewDemo extends StatelessWidget {
           itemCount: 30,
           itemBuilder: (context, index) {
             return Exposure(
-              exposeFactor: 0,
+              exposureController: controller,
+              // exposeFactor: 0.5,
               onExpose: () {
                 debugPrint('$index');
               },
@@ -131,7 +139,7 @@ class CustomScrollViewDemo extends StatelessWidget {
                 (BuildContext context, int index) {
                   //创建列表项
                   return Exposure(
-                    onExpose: (){
+                    onExpose: () {
                       debugPrint('SliverFixedExtentList:$index');
                     },
                     child: Container(

@@ -62,7 +62,41 @@ You can also control the proportion of widgets you want to expose through `expos
     )
 ```
 
+### check current expose widget
+Sometimes you may want to check current widget is exposed or not.
+For example the data send back from network, then you update the list.
+At this time, you want to get which item is exposed. 
+You can use `ExposureController` to trigger `onExpose` callback，
+which item current visible on the screen.
 
+```dart
+// create a ExposureController
+ExposureController _controller = ExposureController();
+
+// set _controller to exposureController 
+ScrollDetailProvider(
+        lazy: true,                     // default value: false
+            child: ListView.builder(
+                itemCount: 200,
+                itemBuilder: (context, index) {
+                    return Exposure(
+                    exposureController: controller,
+                    exposeFactor: 0.9,  // default value: 0.5
+                    onExpose: () {      // required
+                        debugPrint('$index');
+                    },
+                    onHide: (duration) {
+                        debugPrint('$duration');
+                    },
+                    child: Text('$index'),
+                );
+            },
+        ),
+    )
+
+// trigger a expose check event
+_controller.reCheckExposeState();
+```
 
 ## Example
 
