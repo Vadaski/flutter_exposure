@@ -67,7 +67,7 @@ class StaggeredGridViewDemo extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScrollDetailProvider(
       lazy: false,
-      child: StaggeredGridView.countBuilder(
+      child: MasonryGridView.count(
           shrinkWrap: true,
           controller: _scrollController,
           crossAxisCount: 4,
@@ -90,9 +90,7 @@ class StaggeredGridViewDemo extends StatelessWidget {
                     ),
                   )),
             );
-          },
-          staggeredTileBuilder: (index) =>
-              StaggeredTile.count(2, index == 0 ? 2.5 : 3)),
+          },),
     );
   }
 }
