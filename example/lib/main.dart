@@ -93,6 +93,7 @@ class _ListViewDemoState extends State<ListViewDemo> {
           itemCount: colors.length,
           itemBuilder: (context, index) {
             return Exposure(
+              exposureOnce: false,
               exposeFactor: 0.9,
               onExpose: () => onExpose(index),
               onHide: (_) {

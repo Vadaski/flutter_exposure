@@ -48,14 +48,15 @@ You can also control the proportion of widgets you want to expose through `expos
                 itemCount: 200,
                 itemBuilder: (context, index) {
                     return Exposure(
-                    exposeFactor: 0.9,  // default value: 0.5
-                    onExpose: () {      // required
-                        debugPrint('$index');
-                    },
-                    onHide: (duration) {
-                        debugPrint('$duration');
-                    },
-                    child: Text('$index'),
+                        exposureOnce: true, // if this is true, the onExpose will only be called once 
+                        exposeFactor: 0.9,  // default value: 0.5
+                        onExpose: () {      // required
+                            debugPrint('$index');
+                        },
+                        onHide: (duration) {
+                            debugPrint('$duration');
+                        },
+                        child: Text('$index'),
                 );
             },
         ),

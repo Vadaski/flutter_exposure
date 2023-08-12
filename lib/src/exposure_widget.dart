@@ -19,13 +19,27 @@ class Exposure extends StatefulWidget {
     this.onHide,
     this.exposeFactor = 0.5,
     this.exposureController,
+    this.exposureOnce = false,
   }) : super(key: key);
 
+  /// onExpose will be called when widget is visible
   final VoidCallback onExpose;
+
+  /// onHide will be called when widget is invisible
   final OnHide? onHide;
+
+  /// widget need to be tracked
   final Widget child;
+
+  /// exposeFactor is the factor of widget height or width
+  /// depending on the direction of the scroll
   final double exposeFactor;
+
+  /// to recheck if widget is visible
   final ExposureController? exposureController;
+
+  /// if true, exposure will only call once
+  final bool exposureOnce;
 
   @override
   State<Exposure> createState() => _ExposureState();
@@ -127,6 +141,9 @@ class _ExposureState extends State<Exposure> {
         state = ScrollState.visible;
         widget.onExpose.call();
         _recordExposeTime();
+        if (widget.exposureOnce) {
+          _scrollNotificationSubscription.cancel();
+        }
         return;
       }
     } else {
