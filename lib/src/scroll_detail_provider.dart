@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_exposure/src/scroll_notification_publisher.dart';
 
@@ -18,11 +20,14 @@ class ScrollDetailProvider extends StatefulWidget {
 class _ScrollDetailProviderState extends State<ScrollDetailProvider>
     with AutomaticKeepAliveClientMixin {
   bool initialed = false;
+  StreamController<ScrollNotification> scrollNotificationController =
+      StreamController<ScrollNotification>.broadcast();
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return ScrollNotificationPublisher(
+      scrollNotificationController: scrollNotificationController,
       child: Builder(builder: (context) {
         if (!initialed) {
           postStartPosition(context);
@@ -68,6 +73,7 @@ class _ScrollDetailProviderState extends State<ScrollDetailProvider>
         pixels: 0.0,
         viewportDimension: 0.0,
         axisDirection: AxisDirection.down,
+        devicePixelRatio: 1.0,
       ),
     );
     ScrollNotificationPublisher.of(context).add(fakeScrollNotification);

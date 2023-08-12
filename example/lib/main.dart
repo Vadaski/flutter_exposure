@@ -36,14 +36,19 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
-        appBar: const TabBar(tabs: [
-          Tab(text: 'StaggeredGridViewDemo'),
-          Tab(text: 'CustomScrollViewDemo'),
-        ]),
+        appBar: const TabBar(
+          tabs: [
+            Tab(text: 'ListViewDemo'),
+            Tab(text: 'StaggeredGridViewDemo'),
+            Tab(text: 'CustomScrollViewDemo'),
+          ],
+          labelColor: Colors.black,
+        ),
         body: TabBarView(
           children: [
+            ListViewDemo(),
             StaggeredGridViewDemo(controller: _controller),
             const CustomScrollViewDemo(),
           ],
@@ -51,6 +56,58 @@ class _MyHomePageState extends State<MyHomePage> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             _controller.reCheckExposeState();
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class ListViewDemo extends StatefulWidget {
+  const ListViewDemo({super.key});
+
+  @override
+  State<ListViewDemo> createState() => _ListViewDemoState();
+}
+
+class _ListViewDemoState extends State<ListViewDemo> {
+  List<Color> colors = List.generate(20, (index) => Colors.red);
+
+  void onHide(int index) {
+    setState(() {
+      colors[index] = Colors.red;
+    });
+  }
+
+  void onExpose(int index) {
+    setState(() {
+      colors[index] = Colors.green;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: ScrollDetailProvider(
+        child: ListView.builder(
+          itemCount: colors.length,
+          itemBuilder: (context, index) {
+            return Exposure(
+              exposeFactor: 0.9,
+              onExpose: () => onExpose(index),
+              onHide: (_) {
+                onHide(index);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                    height: 100,
+                    color: colors[index],
+                    child: Center(
+                      child: Text('$index', style: TextStyle(fontSize: 20)),
+                    )),
+              ),
+            );
           },
         ),
       ),
@@ -68,29 +125,30 @@ class StaggeredGridViewDemo extends StatelessWidget {
     return ScrollDetailProvider(
       lazy: false,
       child: MasonryGridView.count(
-          shrinkWrap: true,
-          controller: _scrollController,
-          crossAxisCount: 4,
-          crossAxisSpacing: 4,
-          mainAxisSpacing: 10,
-          itemCount: 30,
-          itemBuilder: (context, index) {
-            return Exposure(
-              exposureController: controller,
-              // exposeFactor: 0.5,
-              onExpose: () {
-                debugPrint('$index');
-              },
-              child: Container(
-                  color: Colors.green,
-                  child: Center(
-                    child: CircleAvatar(
-                      backgroundColor: Colors.white,
-                      child: Text('$index'),
-                    ),
-                  )),
-            );
-          },),
+        shrinkWrap: true,
+        controller: _scrollController,
+        crossAxisCount: 4,
+        crossAxisSpacing: 4,
+        mainAxisSpacing: 10,
+        itemCount: 30,
+        itemBuilder: (context, index) {
+          return Exposure(
+            exposureController: controller,
+            // exposeFactor: 0.5,
+            onExpose: () {
+              debugPrint('$index');
+            },
+            child: Container(
+                color: Colors.green,
+                child: Center(
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    child: Text('$index'),
+                  ),
+                )),
+          );
+        },
+      ),
     );
   }
 }
