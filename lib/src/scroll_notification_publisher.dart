@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 // 共享滑动信息
 class ScrollNotificationPublisher extends InheritedWidget {
-  ScrollNotificationPublisher(
+  const ScrollNotificationPublisher(
       {Key? key,
       required Widget child,
       required this.scrollNotificationController})

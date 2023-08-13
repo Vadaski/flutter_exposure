@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: TabBarView(
           children: [
-            ListViewDemo(),
+            const ListViewDemo(),
             StaggeredGridViewDemo(controller: _controller),
             const CustomScrollViewDemo(),
           ],
@@ -93,7 +93,8 @@ class _ListViewDemoState extends State<ListViewDemo> {
           itemCount: colors.length,
           itemBuilder: (context, index) {
             return Exposure(
-              exposureOnce: false,
+              exposureOnce:
+                  false, // if this is true, the onExpose will only be called once
               exposeFactor: 0.9,
               onExpose: () => onExpose(index),
               onHide: (_) {
@@ -105,7 +106,8 @@ class _ListViewDemoState extends State<ListViewDemo> {
                     height: 100,
                     color: colors[index],
                     child: Center(
-                      child: Text('$index', style: TextStyle(fontSize: 20)),
+                      child:
+                          Text('$index', style: const TextStyle(fontSize: 20)),
                     )),
               ),
             );
@@ -119,7 +121,7 @@ class _ListViewDemoState extends State<ListViewDemo> {
 class StaggeredGridViewDemo extends StatelessWidget {
   StaggeredGridViewDemo({Key? key, required this.controller}) : super(key: key);
   final ScrollController _scrollController = ScrollController();
-  ExposureController controller;
+  final ExposureController controller;
 
   @override
   Widget build(BuildContext context) {
