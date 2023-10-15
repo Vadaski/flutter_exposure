@@ -17,9 +17,9 @@ class ScrollNotificationPublisher extends InheritedWidget {
     return false;
   }
 
-  static StreamController<ScrollNotification> of(BuildContext context) {
-    return (context.dependOnInheritedWidgetOfExactType<
-            ScrollNotificationPublisher>() as ScrollNotificationPublisher)
-        .scrollNotificationController;
+  static StreamController<ScrollNotification>? of(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<ScrollNotificationPublisher>()
+        ?.scrollNotificationController;
   }
 }

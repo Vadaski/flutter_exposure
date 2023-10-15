@@ -56,7 +56,7 @@ class _ScrollDetailProviderState extends State<ScrollDetailProvider>
   }
 
   bool postNotification(ScrollNotification notification, BuildContext context) {
-    ScrollNotificationPublisher.of(context).add(notification);
+    scrollNotificationController.add(notification);
     return false;
   }
 
@@ -76,7 +76,7 @@ class _ScrollDetailProviderState extends State<ScrollDetailProvider>
         devicePixelRatio: 1.0,
       ),
     );
-    ScrollNotificationPublisher.of(context).add(fakeScrollNotification);
+    postNotification(fakeScrollNotification, context);
   }
 
   @override

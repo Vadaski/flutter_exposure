@@ -13,3 +13,4 @@
 ### 0.0.4
 * adapt flutter 3
 * fix StreamController is change when setState called
+* add new feature `exposureOnce` on Exposure widget, if this is true, the onExpose will only be called once

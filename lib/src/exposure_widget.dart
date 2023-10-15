@@ -52,6 +52,7 @@ class _ExposureState extends State<Exposure> {
   double _scrollOffset = 0.0;
   Axis direction = Axis.vertical;
   late StreamSubscription _scrollNotificationSubscription;
+  bool _subscribed = false;
 
   @override
   void initState() {
@@ -77,8 +78,15 @@ class _ExposureState extends State<Exposure> {
   }
 
   void subscribeScrollNotification(BuildContext context) {
-    final StreamController<ScrollNotification> publisher =
+    if (_subscribed) {
+      return;
+    }
+    final StreamController<ScrollNotification>? publisher =
         ScrollNotificationPublisher.of(context);
+    if (publisher == null) {
+      throw FlutterError(
+          'Exposure widget must be a descendant of ScrollNotificationPublisher');
+    }
     _scrollNotificationSubscription =
         publisher.stream.listen((scrollNotification) {
       _scrollOffset = scrollNotification.metrics.pixels;
